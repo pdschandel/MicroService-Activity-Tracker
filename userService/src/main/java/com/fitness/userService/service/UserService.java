@@ -14,7 +14,8 @@ public class UserService {
     private UserRepository repository;
 
     public  UserResponse getUserProfile(String userId) {
-        User user = repository.findById(userId).orElseThrow(() -> new RuntimeException("User Not found."));
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User Not found."));
         UserResponse response = new UserResponse();
         response.setFirstName(user.getFirstName());
         response.setEmail(user.getEmail());
@@ -48,5 +49,9 @@ public class UserService {
         response.setCreatedAt(savedUser.getCreatedAt());
         response.setUpdatedAt(savedUser.getUpdatedAt());
         return response;
+    }
+
+    public Boolean existsById(String userId) {
+        return repository.existsById(userId);
     }
 }

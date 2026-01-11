@@ -15,7 +15,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ActivityService {
     private final ActivityRepository repository;
+    private final UserValidationService userValidationService;
     public ActivityResponse trackActivity(ActivityRequest request){
+        boolean isValidUser = userValidationService
+                .validateUser(request.getUserId());
+        if(!isValidUser){
+            throw new RuntimeException("invalid user "+ request.getUserId());
+        }
         Activity activity = Activity.builder()
                 .userId(request.getUserId())
                 .type(request.getType())
@@ -29,6 +35,7 @@ public class ActivityService {
     }
 
     private ActivityResponse mapToResponse(Activity activity){
+
         ActivityResponse response = new ActivityResponse();
         response.setId(activity.getId());
         response.setUserId(activity.getUserId());
@@ -43,6 +50,7 @@ public class ActivityService {
     }
 
     public List<ActivityResponse> getUserActivities(String userId) {
+
         List<Activity> activities = repository.findByUserId(userId);
         return  activities.stream()
                 .map(this::mapToResponse)
